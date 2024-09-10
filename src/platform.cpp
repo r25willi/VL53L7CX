@@ -100,6 +100,7 @@ uint8_t VL53L7CX::RdMulti(
 {
   int status = 0;
   uint8_t buffer[2];
+  uint8_t retry_count = 5;
 
   // Loop until the port is transmitted correctly
   do {
@@ -122,7 +123,10 @@ uint8_t VL53L7CX::RdMulti(
 #endif
     // End of fix
 
-  } while (status != 0);
+  } while (status != 0 && --retry_count);
+  if (!retry_count) {
+    return 1;
+  }
   uint32_t i = 0;
   if (size > DEFAULT_I2C_BUFFER_LEN) {
     while (i < size) {
